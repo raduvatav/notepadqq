@@ -2,6 +2,7 @@
 
 ### build debug
 set same output dir as release
+
 fif Makefile qtchooser; leave just `lrelease`
 
 ### Links
