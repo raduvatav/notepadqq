@@ -90,6 +90,8 @@ public:
         NQQ_SETTING(SmartIndentation,               bool,       true)
         NQQ_SETTING(MathRendering,                  bool,       true)
         NQQ_SETTING(UseNativeFilePicker,            bool,       true)
+
+	NQQ_SETTING(TabBarWidth,                    int,        200)
     END_CATEGORY(General)
 
     BEGIN_CATEGORY(Appearance)

@@ -1,6 +1,7 @@
 #include "include/editortabwidget.h"
 
 #include "include/iconprovider.h"
+#include "include/nqqsettings.h"
 
 #include <QApplication>
 #include <QFileInfo>
@@ -56,7 +57,9 @@ EditorTabWidget::EditorTabWidget(QWidget *parent) :
     this->tabBar()->setExpanding(true);
     this->setUsesScrollButtons(true);
 #else
-    QString style = QString("QTabBar::tab{min-width:10px; height:200px;}");
+    int height = NqqSettings::getInstance().General.getTabBarWidth();
+    QString style = QString("QTabBar::tab{min-width:10px; height:%1px;}").arg(height);
+
     setStyleSheet(style);
 #endif
 
