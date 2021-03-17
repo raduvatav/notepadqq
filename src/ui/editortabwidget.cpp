@@ -15,26 +15,26 @@
 class CustomTabStyle : public QProxyStyle {
 public:
     QSize sizeFromContents(
-	ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const
+        ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const
     {
-	QSize s = QProxyStyle::sizeFromContents(type, option, size, widget);
-	if (type == QStyle::CT_TabBarTab) {
-	    s.transpose();
-	}
-	return s;
+        QSize s = QProxyStyle::sizeFromContents(type, option, size, widget);
+        if (type == QStyle::CT_TabBarTab) {
+            s.transpose();
+        }
+        return s;
     }
 
     void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
     {
-	if (element == CE_TabBarTabLabel) {
-	    if (const QStyleOptionTab* tab = qstyleoption_cast<const QStyleOptionTab*>(option)) {
-		QStyleOptionTab opt(*tab);
-		opt.shape = QTabBar::RoundedNorth;
-		QProxyStyle::drawControl(element, &opt, painter, widget);
-		return;
-	    }
-	}
-	QProxyStyle::drawControl(element, option, painter, widget);
+        if (element == CE_TabBarTabLabel) {
+            if (const QStyleOptionTab* tab = qstyleoption_cast<const QStyleOptionTab*>(option)) {
+                QStyleOptionTab opt(*tab);
+                opt.shape = QTabBar::RoundedNorth;
+                QProxyStyle::drawControl(element, &opt, painter, widget);
+                return;
+            }
+        }
+        QProxyStyle::drawControl(element, option, painter, widget);
     }
 };
 
@@ -70,11 +70,11 @@ EditorTabWidget::~EditorTabWidget()
 {
     // Manually remove each tab to keep m_editorPointers consistent
     for (int i = this->count() - 1; i >= 0; i--) {
-	QSharedPointer<Editor> edt = editor(i);
-	m_editorPointers.remove(edt.data());
-	// Remove the parent so that QObject cannot destroy the
-	// object (QSharedPointer will take care of it).
-	edt->setParent(nullptr);
+        QSharedPointer<Editor> edt = editor(i);
+        m_editorPointers.remove(edt.data());
+        // Remove the parent so that QObject cannot destroy the
+        // object (QSharedPointer will take care of it).
+        edt->setParent(nullptr);
     }
 }
 
@@ -136,8 +136,8 @@ void EditorTabWidget::setTabText(Editor* editor, const QString& text)
     int idx = indexOf(editor);
 
     if (idx >= 0) {
-	QTabWidget::setTabText(idx, text);
-	editor->setTabName(text);
+        QTabWidget::setTabText(idx, text);
+        editor->setTabName(text);
     }
 }
 
@@ -171,13 +171,13 @@ int EditorTabWidget::rawAddEditorTab(
     QString oldTooltip;
 
     if (create) {
-	editor = Editor::getNewEditor(this);
+        editor = Editor::getNewEditor(this);
     } else {
-	editor = source->editor(sourceTabIndex);
+        editor = source->editor(sourceTabIndex);
 
-	oldText = source->tabText(sourceTabIndex);
-	oldIcon = source->tabIcon(sourceTabIndex);
-	oldTooltip = source->tabToolTip(sourceTabIndex);
+        oldText = source->tabText(sourceTabIndex);
+        oldIcon = source->tabIcon(sourceTabIndex);
+        oldTooltip = source->tabToolTip(sourceTabIndex);
     }
 
     m_editorPointers.insert(editor.data(), editor);
@@ -189,20 +189,20 @@ int EditorTabWidget::rawAddEditorTab(
     int index = addTab(editor.data(), tabTitle);
 
     if (!create) {
-	source->disconnectEditorSignals(editor.data());
+        source->disconnectEditorSignals(editor.data());
     }
     this->connectEditorSignals(editor.data());
 
     if (setFocus) {
-	this->setCurrentIndex(index);
-	editor->setFocus();
+        this->setCurrentIndex(index);
+        editor->setFocus();
     }
 
     if (create) {
-	this->setSavedIcon(index, true);
+        this->setSavedIcon(index, true);
     } else {
-	this->setTabIcon(index, oldIcon);
-	this->setTabToolTip(index, oldTooltip);
+        this->setTabIcon(index, oldIcon);
+        this->setTabToolTip(index, oldTooltip);
     }
 
     // Common setup
@@ -224,12 +224,12 @@ int EditorTabWidget::findOpenEditorByUrl(const QUrl& filename)
 {
     QUrl absFileName = filename;
     if (absFileName.isLocalFile())
-	absFileName = QUrl::fromLocalFile(QFileInfo(filename.toLocalFile()).absoluteFilePath());
+        absFileName = QUrl::fromLocalFile(QFileInfo(filename.toLocalFile()).absoluteFilePath());
 
     for (int i = 0; i < count(); i++) {
-	auto editor = this->editor(i);
-	if (editor->filePath() == filename)
-	    return i;
+        auto editor = this->editor(i);
+        if (editor->filePath() == filename)
+            return i;
     }
 
     return -1;
@@ -252,22 +252,22 @@ void EditorTabWidget::tabRemoved(int)
 
     QList<QWidget*> tabs;
     for (int i = 0; i < this->count(); i++) {
-	tabs.append(widget(i));
+        tabs.append(widget(i));
     }
 
     for (QSharedPointer<Editor> editor : m_editorPointers) {
-	if (!tabs.contains(editor.data())) {
-	    // Editor is the one that has been removed!
-	    if (editor.data() != nullptr) {
-		// Set no parent, so that QObject won't delete
-		// the editor: that's what QSharedPointer should do.
-		editor->setParent(nullptr);
-		disconnectEditorSignals(editor.data());
-	    }
+        if (!tabs.contains(editor.data())) {
+            // Editor is the one that has been removed!
+            if (editor.data() != nullptr) {
+                // Set no parent, so that QObject won't delete
+                // the editor: that's what QSharedPointer should do.
+                editor->setParent(nullptr);
+                disconnectEditorSignals(editor.data());
+            }
 
-	    m_editorPointers.remove(editor.data());
-	    break;
-	}
+            m_editorPointers.remove(editor.data());
+            break;
+        }
     }
 }
 
@@ -279,8 +279,8 @@ QSharedPointer<Editor> EditorTabWidget::currentEditor()
 QString EditorTabWidget::tabTextFromEditor(QSharedPointer<EditorNS::Editor> ed)
 {
     for (int i = 0; i < count(); ++i)
-	if (editor(i) == ed)
-	    return tabText(i);
+        if (editor(i) == ed)
+            return tabText(i);
 
     return QString();
 }
@@ -295,7 +295,7 @@ void EditorTabWidget::setZoomFactor(const qreal& zoomFactor)
     m_zoomFactor = zoomFactor;
 
     for (int i = 0; i < count(); i++) {
-	editor(i)->setZoomFactor(zoomFactor);
+        editor(i)->setZoomFactor(zoomFactor);
     }
 }
 
@@ -307,16 +307,16 @@ void EditorTabWidget::deleteIfEmpty()
 void EditorTabWidget::deleteIfEmpty(EditorTabWidget* tabWidget)
 {
     if (tabWidget->count() == 0) {
-	delete tabWidget;
+        delete tabWidget;
     }
 }
 
 void EditorTabWidget::setSavedIcon(int index, bool saved)
 {
     if (saved)
-	this->setTabIcon(index, IconProvider::fromTheme("document-saved"));
+        this->setTabIcon(index, IconProvider::fromTheme("document-saved"));
     else
-	this->setTabIcon(index, IconProvider::fromTheme("document-unsaved"));
+        this->setTabIcon(index, IconProvider::fromTheme("document-unsaved"));
 }
 
 void EditorTabWidget::setTabBarHidden(bool yes)
@@ -329,7 +329,7 @@ void EditorTabWidget::setTabBarHighlight(bool yes)
     // Get colors from palette so it doesn't look fugly.
     QPalette palette = tabBar()->palette();
     palette.setColor(QPalette::Highlight,
-	yes ? QApplication::palette().highlight().color() : QApplication::palette().light().color());
+        yes ? QApplication::palette().highlight().color() : QApplication::palette().light().color());
     tabBar()->setPalette(palette);
 }
 
@@ -337,18 +337,18 @@ void EditorTabWidget::on_cleanChanged(bool isClean)
 {
     Editor* editor = dynamic_cast<Editor*>(sender());
     if (!editor)
-	return;
+        return;
 
     int index = indexOf(editor);
     if (index >= 0)
-	setSavedIcon(index, isClean);
+        setSavedIcon(index, isClean);
 }
 
 void EditorTabWidget::on_editorMouseWheel(QWheelEvent* ev)
 {
     Editor* editor = dynamic_cast<Editor*>(sender());
     if (!editor)
-	return;
+        return;
 
     emit editorMouseWheel(indexOf(editor), ev);
 }
@@ -356,13 +356,13 @@ void EditorTabWidget::on_editorMouseWheel(QWheelEvent* ev)
 void EditorTabWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
     if (ev->button() == Qt::MiddleButton) {
-	int index = tabBar()->tabAt(ev->pos());
+        int index = tabBar()->tabAt(ev->pos());
 
-	if (index != -1) {
-	    emit tabCloseRequested(index);
-	    ev->accept();
-	    return;
-	}
+        if (index != -1) {
+            emit tabCloseRequested(index);
+            ev->accept();
+            return;
+        }
     }
 
     QTabWidget::mouseReleaseEvent(ev);
@@ -371,10 +371,10 @@ void EditorTabWidget::mouseReleaseEvent(QMouseEvent* ev)
 QString EditorTabWidget::generateTabTitleForUrl(const QUrl& filename) const
 {
     QString fileName =
-	QFileInfo(filename.toDisplayString(QUrl::RemoveScheme | QUrl::RemovePassword | QUrl::RemoveUserInfo |
-					   QUrl::RemovePort | QUrl::RemoveAuthority | QUrl::RemoveQuery |
-					   QUrl::RemoveFragment | QUrl::PreferLocalFile))
-	    .fileName();
+        QFileInfo(filename.toDisplayString(QUrl::RemoveScheme | QUrl::RemovePassword | QUrl::RemoveUserInfo |
+                                           QUrl::RemovePort | QUrl::RemoveAuthority | QUrl::RemoveQuery |
+                                           QUrl::RemoveFragment | QUrl::PreferLocalFile))
+            .fileName();
     return fileName;
 }
 
@@ -382,7 +382,7 @@ void EditorTabWidget::on_fileNameChanged(const QUrl& /*oldFileName*/, const QUrl
 {
     Editor* editor = dynamic_cast<Editor*>(sender());
     if (!editor)
-	return;
+        return;
 
     int index = indexOf(editor);
 
@@ -401,7 +401,7 @@ void EditorTabWidget::on_currentTabChanged(int index)
 {
     // Store current index to become former index on next tab change.
     if (m_mostRecentTabIndex != index) {
-	m_formerTabIndex = m_mostRecentTabIndex;
-	m_mostRecentTabIndex = index;
+        m_formerTabIndex = m_mostRecentTabIndex;
+        m_mostRecentTabIndex = index;
     }
 }
